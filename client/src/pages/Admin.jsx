@@ -5,21 +5,23 @@ import { toast } from "react-toastify";
 function Admin() {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   const fetchUsers = async () => {
+    setLoading(true); 
     try {
       const res = await axios.get(import.meta.env.VITE_API_BASE_URL + "/api/admin/users");
       setUsers(res.data);
     } catch (error) {
       console.error("Error fetching users", error);
       toast.error("Failed to fetch users");
+    } finally {
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
     fetchUsers();
-    // const interval = setInterval(fetchUsers, 3000);
-    // return () => clearInterval(interval);
   }, []);
 
   const handleDeleteUser = async (userId) => {
@@ -51,44 +53,39 @@ function Admin() {
         onChange={(e) => setSearchTerm(e.target.value)}
         style={styles.searchInput}
       />
-      <div style={styles.container}>
-        <h3 style={styles.sectionTitle}>✅ Registered Users</h3>
-        <div style={styles.grid}>
-          {paidUsers.length === 0 ? (
-            <p style={styles.noUsers}>No paid users found.</p>
-          ) : (
-            paidUsers.map((user) => (
-              <UserCard key={user._id} user={user} handleDeleteUser={handleDeleteUser} />
-            ))
-          )}
-        </div>
 
-        <h3 style={styles.sectionTitle}>❌ Unregistered Users (Unpaid)</h3>
-        <div style={styles.grid}>
-          {unpaidUsers.length === 0 ? (
-            <p style={styles.noUsers}>No unpaid users found.</p>
-          ) : (
-            unpaidUsers.map((user) => (
-              <UserCard key={user._id} user={user} handleDeleteUser={handleDeleteUser} />
-            ))
-          )}
+      {loading ? ( 
+        <p style={styles.loading}>⏳ Loading users...</p>
+      ) : (
+        <div style={styles.container}>
+          <h3 style={styles.sectionTitle}>✅ Registered Users</h3>
+          <div style={styles.grid}>
+            {paidUsers.length === 0 ? (
+              <p style={styles.noUsers}>No paid users found.</p>
+            ) : (
+              paidUsers.map((user) => (
+                <UserCard key={user._id} user={user} handleDeleteUser={handleDeleteUser} />
+              ))
+            )}
+          </div>
+
+          <h3 style={styles.sectionTitle}>❌ Unregistered Users (Unpaid)</h3>
+          <div style={styles.grid}>
+            {unpaidUsers.length === 0 ? (
+              <p style={styles.noUsers}>No unpaid users found.</p>
+            ) : (
+              unpaidUsers.map((user) => (
+                <UserCard key={user._id} user={user} handleDeleteUser={handleDeleteUser} />
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
 
 function UserCard({ user, handleDeleteUser }) {
-  const formatDate = (dateString) => {
-    if (!dateString) return "Not Available";
-
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
   return (
     <div style={styles.card}>
       <h3 style={styles.name}>👤 {user.fullName}</h3>
@@ -96,16 +93,16 @@ function UserCard({ user, handleDeleteUser }) {
       <p style={styles.info}><strong>📞 Phone:</strong> {user.phone}</p>
       <p style={styles.info}><strong>⚥ Gender:</strong> {user.gender}</p>
       <p style={styles.info}><strong>📅 Batch:</strong> {user.batch}</p>
-      <p style={styles.info}><strong>🕒 Enrollment Date:</strong> {formatDate(user.createdAt)}</p>
-      <p style={styles.info}><strong>🎂 Date of Birth:</strong> {formatDate(user.dob)}</p>
+      <p style={styles.info}><strong>🕒 Enrollment Date:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+      <p style={styles.info}><strong>🎂 Date of Birth:</strong> {new Date(user.dob).toLocaleDateString()}</p>
       <p style={styles.info}><strong>🗓 Age:</strong> {user.age} years</p>
 
       <h4 style={styles.sectionTitle}>📍 Address</h4>
       <p style={styles.info}>{user.address?.street}, {user.address?.city}, {user.address?.state} - {user.address?.postalCode}, {user.address?.country}</p>
 
       <h4 style={styles.sectionTitle}>💳 Payment Info</h4>
-      <p style={styles.info}><strong>Payment Date:</strong> {formatDate(user.paymentInfo?.paymentDate)}</p>
-      <p style={styles.info}><strong>Payment Expires:</strong> {formatDate(user.paymentInfo?.paymentExpires)}</p>
+      <p style={styles.info}><strong>Payment Date:</strong> {user.paymentInfo?.paymentDate ? new Date(user.paymentInfo.paymentDate).toLocaleDateString() : "Not Paid"}</p>
+      <p style={styles.info}><strong>Payment Expires:</strong> {user.paymentInfo?.paymentExpires ? new Date(user.paymentInfo.paymentExpires).toLocaleDateString() : "Not Paid"}</p>
       <p style={styles.info}><strong>Payment Status:</strong>
         <span style={user.paymentInfo?.isPaid ? styles.paid : styles.notPaid}>
           <strong> {user.paymentInfo?.isPaid ? " Paid" : " Not Paid"}</strong>
@@ -133,6 +130,7 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #ccc",
   },
+  loading: { textAlign: "center", fontSize: "20px", color: "#BB86FC", marginTop: "20px" }, // Loading message
   noUsers: { textAlign: "center", fontSize: "18px", color: "#E0E0E0" },
   grid: { display: "grid", gap: "20px", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))" },
   card: { backgroundColor: "#1E1E1E", padding: "20px", borderRadius: "10px", boxShadow: "0 4px 10px rgba(255, 255, 255, 0.1)" },

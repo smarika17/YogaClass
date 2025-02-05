@@ -49,7 +49,7 @@ export const registerUser = async (req, res) => {
 };
 
 export const updatePayment = async (req, res) => {
-  const { email } = req.params;
+  const { email, batch } = req.body;
 
   try {
     const user = await User.findOne({ email });
@@ -60,7 +60,11 @@ export const updatePayment = async (req, res) => {
     if(user.paymentInfo.isPaid){
       return res.status(400).json({ message: "Payment already made!" });
     }
-
+    
+    if (user.batch !== batch) {
+      user.batch = batch;
+    }
+    
     user.paymentInfo.isPaid = true;
     user.paymentInfo.paymentDate = new Date().toISOString();
     user.paymentInfo.paymentExpires = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString();
@@ -111,11 +115,10 @@ export const checkUser = async (req, res) => {
     }
 
     // Instead of returning an error for already paid users, return the payment status
-    return res.status(200).json({ exists: true, isPaid: user.paymentInfo.isPaid });
+    return res.status(200).json({ exists: true, isPaid: user.paymentInfo.isPaid, batch: user.batch });
 
   } catch (error) {
     console.error("Error in checkUser:", error.message);
     return res.status(500).json({ message: "Server Error" });
   }
 };
-

@@ -8,6 +8,7 @@ export default function Payment() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [formData, setFormData] = useState({ batch: "" });
 
   const navigate = useNavigate();
 
@@ -27,6 +28,7 @@ export default function Payment() {
           navigate("/");
         } else {
           setVerified(true);
+          setFormData({ batch: response.data.batch || "" });
           toast.success("User verified! Proceed with payment.");
         }
       } else {
@@ -42,7 +44,11 @@ export default function Payment() {
   const handlePayment = async () => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/users/updatePayment/${email}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/users/updatePayment`,
+        {
+          email,
+          batch: formData.batch,
+        }
       );
       if (response.data.success) {
         navigate("/");
@@ -54,6 +60,10 @@ export default function Payment() {
       console.error("Error processing payment:", error);
       toast.error("Error processing payment!");
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validate = () => {
@@ -86,7 +96,20 @@ export default function Payment() {
           </button>
         </div>
       ) : (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%"}}>
+          <p>Choose any batch</p>
+          <select
+            name="batch"
+            onChange={handleChange}
+            value={formData.batch}
+            style={{ width: "90%", maxWidth: "400px", margin: '10px 5px', padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc' }}
+          >
+            <option value="">Select Batch</option>
+            <option value="6-7AM">6-7AM</option>
+            <option value="7-8AM">7-8AM</option>
+            <option value="8-9AM">8-9AM</option>
+            <option value="5-6PM">5-6PM</option>
+          </select>
           <p style={{ color: "grey" }}>Pay Rs. 500 to complete the Registration</p>
           <button
             onClick={handlePayment}

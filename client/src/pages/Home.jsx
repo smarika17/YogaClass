@@ -13,15 +13,15 @@ export default function Home() {
             </button>
             <button
                 style={styles.button}
-                onClick={() => navigate('/admin')}
-            >
-                Admin
-            </button>
-            <button
-                style={styles.button}
                 onClick={() => navigate('/payment')}
             >
                 Pay Now
+            </button>
+            <button
+                style={styles.button}
+                onClick={() => navigate('/admin')}
+            >
+                Admin
             </button>
         </div>
     );

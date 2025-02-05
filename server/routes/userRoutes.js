@@ -25,7 +25,7 @@ router.post('/register', [
 
 router.delete('/delete/:userId', deleteUser);
 
-router.put('/updatepayment/:email', updatePayment);
+router.put('/updatepayment/', updatePayment);
 
 router.get('/checkuser/:email', checkUser);
 
