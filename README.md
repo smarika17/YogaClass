@@ -59,7 +59,7 @@ The project uses CRUD operations, payment status updates, batch management, and 
 
 ## 8. Hosted Links
 - **Frontend:** https://yogaclassfrontend-4gq8.onrender.com
-- **Backend API:** https://yogaclassbackend-uv9r.onrender.com
+- **Backend:** https://yogaclassbackend-uv9r.onrender.com
 
 
 ## Steps to Setup the Project Locally
