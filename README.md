@@ -16,6 +16,8 @@ The database consists of the following entities:
 An ER diagram is attached to visualize the relationships between these entities.
 ![WhatsApp Image 2025-02-05 at 16 13 43 (1)](https://github.com/user-attachments/assets/330fe617-cd2d-43b7-9c20-f95aab3f06b5)
 
+### SQL script: https://www.notion.so/SQL-script-19188e50798b8062b009cb2bcba3c15d
+
 ## 3. About `CompletePayment()` Function
 
 The `CompletePayment()` function ensures that at the beginning of each month, all registered users' status resets to `false`, requiring renewal of payment to maintain registration.
