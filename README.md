@@ -1,5 +1,5 @@
-# Yoga Class Admission System live: 
-https://yogaclassfrontend-4gq8.onrender.com/
+# Yoga Class Admission
+Live: https://yogaclassfrontend-4gq8.onrender.com/
 
 
 ## 1. About Project
